@@ -11,7 +11,7 @@ class Sp2d extends Model
 
     protected $fillable = [
         'nomor_sp2d', 'tanggal_sp2d', 'nilai_sp2d', 'spm_id',
-        'keterangan', 'file_pdf', 'status', 'uploaded_by', 'verified_by'
+        'keterangan', 'file_pdf', 'status', 'uploaded_by', 'verified_by', 'verified_at'
     ];
 
     public function uploader()

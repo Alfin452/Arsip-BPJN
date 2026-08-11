@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('jenis_tagihan')->nullable();
             $table->text('keterangan')->nullable();
             $table->string('file_pdf');
-            $table->enum('status', ['pending', 'verified', 'rejected'])->default('pending');
+            $table->string('status')->default('Draft');
             $table->foreignId('uploaded_by')->constrained('users')->onDelete('cascade');
             $table->foreignId('verified_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();

@@ -12,4 +12,14 @@ class Satker extends Model
     {
         return $this->hasMany(Ppk::class);
     }
+
+    public function dipas()
+    {
+        return $this->hasMany(Dipa::class);
+    }
+
+    public function paketPekerjaans()
+    {
+        return $this->hasMany(PaketPekerjaan::class);
+    }
 }

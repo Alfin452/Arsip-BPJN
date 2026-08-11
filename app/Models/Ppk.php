@@ -12,4 +12,9 @@ class Ppk extends Model
     {
         return $this->belongsTo(Satker::class);
     }
+
+    public function paketPekerjaans()
+    {
+        return $this->hasMany(PaketPekerjaan::class);
+    }
 }

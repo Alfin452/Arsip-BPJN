@@ -126,7 +126,7 @@
             <!-- Main Content Wrapper -->
             <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
                 <!-- Top Header -->
-                <header class="sticky top-0 z-30 flex items-center justify-between px-6 lg:px-8 h-24 pt-4 pb-2 bg-[#F4F7FE]/90 dark:bg-slate-900/90 backdrop-blur-md">
+                <header class="sticky top-0 z-50 flex items-center justify-between px-6 lg:px-8 h-24 pt-4 pb-2 bg-[#F4F7FE]/90 dark:bg-slate-900/90 backdrop-blur-md">
                     <div class="flex items-center gap-4">
                         <!-- Menu Toggle -->
                         <button @click="sidebarOpen = !sidebarOpen" class="text-slate-500 hover:text-blue-600 focus:outline-none bg-white dark:bg-slate-800 p-2 rounded-full shadow-sm transition-colors">
@@ -146,12 +146,102 @@
                     <!-- Right Actions Pill -->
                     <div class="flex items-center bg-white dark:bg-slate-800 rounded-full p-1.5 shadow-sm border border-slate-100 dark:border-slate-700 gap-2 pr-2">
                         
-                        <!-- Notification Bell -->
-                        <button onclick="Swal.fire({title: 'Coming Soon!', text: 'Fitur notifikasi sedang dalam pengembangan.', icon: 'info', confirmButtonColor: '#3b82f6', customClass: {popup: 'rounded-2xl', confirmButton: 'rounded-xl px-6 py-2.5'}})" class="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-full transition-colors relative ml-1">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                            <span class="absolute top-1 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
-                        </button>
+                        <!-- Notification Dropdown -->
+                        <div x-data="{ 
+                            open: false, 
+                            notifications: {{ auth()->user()->notifications()->take(10)->get()->toJson() }},
+                            get unreadCount() { return this.notifications.filter(n => n.read_at === null).length },
+                            
+                            markAsRead(id) {
+                                fetch(`/notifications/${id}/read`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json'
+                                    }
+                                }).then(() => {
+                                    let notif = this.notifications.find(n => n.id === id);
+                                    if(notif) notif.read_at = new Date().toISOString();
+                                });
+                            },
+                            
+                            markAllAsRead() {
+                                fetch('/notifications/read-all', {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json'
+                                    }
+                                }).then(() => {
+                                    this.notifications.forEach(n => n.read_at = new Date().toISOString());
+                                });
+                            },
+                            
+                            init() {
+                                setInterval(() => {
+                                    fetch('/notifications/fetch', {
+                                        headers: {
+                                            'Accept': 'application/json'
+                                        }
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        this.notifications = data;
+                                    })
+                                    .catch(err => console.error('Error fetching notifications', err));
+                                }, 10000);
+                            }
+                        }" class="relative">
+                            <!-- Bell Icon -->
+                            <button @click="open = !open" class="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-full transition-colors relative ml-1">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                                <span x-show="unreadCount > 0" x-text="unreadCount" style="display: none;" class="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 bg-red-500 text-[10px] font-bold text-white rounded-full border-2 border-white dark:border-slate-800"></span>
+                            </button>
 
+                            <!-- Dropdown Menu -->
+                            <div x-show="open" 
+                                 @click.away="open = false"
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave-start="opacity-100 scale-100"
+                                 x-transition:leave-end="opacity-0 scale-95"
+                                 class="absolute right-0 mt-3 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden z-[100] py-2 origin-top-right" style="display: none;">
+                                
+                                <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                                    <h3 class="font-semibold text-slate-800 dark:text-slate-200">Notifikasi</h3>
+                                    <button x-show="unreadCount > 0" @click="markAllAsRead" class="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium">Tandai semua dibaca</button>
+                                </div>
+
+                                <div class="max-h-80 overflow-y-auto">
+                                    <template x-if="notifications.length === 0">
+                                        <div class="p-6 text-center text-slate-500 dark:text-slate-400">
+                                            <svg class="w-10 h-10 mx-auto mb-2 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                                            <p class="text-sm">Belum ada notifikasi baru</p>
+                                        </div>
+                                    </template>
+
+                                    <template x-for="notification in notifications" :key="notification.id">
+                                        <a :href="notification.data.sp2d_id ? `/sp2d?show=${notification.data.sp2d_id}` : `/spm?show=${notification.data.spm_id}`" @click="markAsRead(notification.id)" :class="notification.read_at === null ? 'bg-white dark:bg-slate-800' : 'bg-slate-50 dark:bg-slate-900'" class="block px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition border-b border-slate-100 dark:border-slate-700/50 last:border-0">
+                                            <div class="flex gap-3">
+                                                <div class="flex-shrink-0 mt-1">
+                                                    <div :class="notification.read_at === null ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' : 'bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400'" class="w-8 h-8 rounded-full flex items-center justify-center">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <p :class="notification.read_at === null ? 'font-semibold' : 'font-normal'" class="text-sm text-slate-700 dark:text-slate-300 line-clamp-2" x-text="notification.data.message"></p>
+                                                    <p class="text-xs text-slate-500 mt-1" x-text="new Date(notification.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'})"></p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                         <!-- Dark Mode Toggle -->
                         <button @click="darkMode = !darkMode" class="p-2 text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-full transition-colors mr-2 focus:outline-none">
                             <svg x-show="darkMode" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
@@ -242,5 +332,7 @@
                 });
             </script>
         @endif
+
+        @stack('scripts')
     </body>
 </html>
