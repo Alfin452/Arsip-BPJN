@@ -1,8 +1,8 @@
 <!-- Sidebar Overlay for Mobile -->
-<div x-show="sidebarOpen" class="fixed inset-0 z-40 bg-slate-900/50 lg:hidden" @click="sidebarOpen = false" x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
+<div x-show="sidebarOpen" class="fixed inset-0 z-40 bg-slate-900/50 lg:hidden print:hidden" @click="sidebarOpen = false" x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
 
 <!-- Sidebar -->
-<aside :class="sidebarOpen ? 'translate-x-0 lg:ml-0' : '-translate-x-full lg:-ml-60'" class="fixed lg:relative inset-y-0 left-0 z-50 w-60 text-emerald-50 transition-all duration-300 ease-in-out flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.15)] border-r border-blue-800/30 overflow-hidden bg-gradient-to-br from-blue-950 via-blue-800 to-indigo-900 bg-[length:200%_200%] animate-gradient">
+<aside :class="sidebarOpen ? 'translate-x-0 lg:ml-0' : '-translate-x-full lg:-ml-60'" class="fixed lg:relative inset-y-0 left-0 z-50 w-60 text-emerald-50 transition-all duration-300 ease-in-out flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.15)] border-r border-blue-800/30 overflow-hidden bg-gradient-to-br from-blue-950 via-blue-800 to-indigo-900 bg-[length:200%_200%] animate-gradient print:hidden">
     
     <!-- Sidebar Header -->
     <div class="flex items-center justify-between h-24 pt-4 pb-2 px-6 shrink-0">
@@ -20,15 +20,13 @@
     <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
         
         <!-- MENU UTAMA -->
-        <div class="px-3 text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-2 mt-2">Menu Utama</div>
-        <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition font-medium {{ request()->routeIs('dashboard') ? 'bg-blue-800 text-white' : 'text-blue-100/70 hover:bg-blue-800/50 hover:text-white' }}">
+        <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition font-medium {{ request()->routeIs('dashboard') ? 'bg-blue-800 text-white' : 'text-blue-100/70 hover:bg-blue-800/50 hover:text-white' }} mt-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
             Dashboard
         </a>
         
         <!-- MODUL TRANSAKSI -->
-        <div class="px-3 text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-2 mt-6">Pelaksanaan Anggaran</div>
-        <a href="{{ route('dipas.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition font-medium {{ request()->routeIs('dipas.*') ? 'bg-blue-800 text-white' : 'text-blue-100/70 hover:bg-blue-800/50 hover:text-white' }}">
+        <a href="{{ route('dipas.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition font-medium {{ request()->routeIs('dipas.*') ? 'bg-blue-800 text-white' : 'text-blue-100/70 hover:bg-blue-800/50 hover:text-white' }} mt-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             Pagu Anggaran
         </a>
@@ -39,9 +37,7 @@
         </a>
 
         <!-- MODUL DOKUMEN -->
-        <div class="px-3 text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-2 mt-6">Dokumen Pencairan</div>
-        
-        <a href="{{ route('basts.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition font-medium {{ request()->routeIs('basts.*') ? 'bg-blue-800 text-white' : 'text-blue-100/70 hover:bg-blue-800/50 hover:text-white' }}">
+        <a href="{{ route('basts.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition font-medium {{ request()->routeIs('basts.*') ? 'bg-blue-800 text-white' : 'text-blue-100/70 hover:bg-blue-800/50 hover:text-white' }} mt-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             BAST & Penagihan
         </a>
@@ -56,9 +52,6 @@
             Data SP2D
         </a>
 
-        <!-- MODUL LAPORAN -->
-        <div class="px-3 text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-2 mt-6">Audit & Laporan</div>
-        
         <div x-data="{ openLaporan: {{ request()->routeIs('laporan.*') ? 'true' : 'false' }} }" class="space-y-1">
             <button @click="openLaporan = !openLaporan" class="w-full flex items-center justify-between gap-2.5 px-3 py-2.5 rounded-lg text-sm transition font-medium {{ request()->routeIs('laporan.*') ? 'bg-blue-800 text-white' : 'text-blue-100/70 hover:bg-blue-800/50 hover:text-white' }}">
                 <div class="flex items-center gap-2.5">
@@ -111,16 +104,15 @@
             </div>
         </div>
 
-        <a href="#" class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition font-medium text-blue-100/70 hover:bg-blue-800/50 hover:text-white mt-1">
+        @if(auth()->user()->role == 'admin')
+        
+        <a href="{{ route('activity-log') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition font-medium text-blue-100/70 hover:bg-blue-800/50 hover:text-white mt-1">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             Log Aktivitas
         </a>
 
-        @if(auth()->user()->role == 'admin')
-        <!-- MODUL ADMINISTRASI -->
-        <div class="px-3 text-xs font-bold text-blue-300/50 uppercase tracking-wider mb-2 mt-6">Administrasi</div>
         <!-- Dropdown Master Data -->
-        <div x-data="{ open: {{ request()->routeIs('satker.*') || request()->routeIs('ppk.*') || request()->routeIs('penyedias.*') ? 'true' : 'false' }} }" class="space-y-1">
+        <div x-data="{ open: {{ request()->routeIs('satker.*') || request()->routeIs('ppk.*') || request()->routeIs('penyedias.*') ? 'true' : 'false' }} }" class="space-y-1 mt-6">
             <button @click="open = !open" class="w-full flex items-center justify-between gap-2.5 px-3 py-2.5 rounded-lg text-sm transition font-medium {{ request()->routeIs('satker.*') || request()->routeIs('ppk.*') || request()->routeIs('penyedias.*') ? 'bg-blue-800 text-white' : 'text-blue-100/70 hover:bg-blue-800/50 hover:text-white' }}">
                 <div class="flex items-center gap-2.5">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>

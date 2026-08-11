@@ -74,6 +74,8 @@ class Sp2dController extends Controller
 
     public function create(Request $request)
     {
+        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
         // Hanya SPM yang Terverifikasi dan BELUM memiliki SP2D
         $spms = Spm::with(['satker', 'ppk'])
                    ->where('status', 'Terverifikasi')
@@ -87,6 +89,8 @@ class Sp2dController extends Controller
 
     public function store(Request $request)
     {
+        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
         $validated = $request->validate([
             'spm_id' => 'required|exists:spms,id',
             'nomor_sp2d' => 'required|unique:sp2ds',
@@ -104,8 +108,7 @@ class Sp2dController extends Controller
         }
 
         if ($request->hasFile('file_pdf')) {
-            $path = $request->file('file_pdf')->store('public/sp2ds');
-            $validated['file_pdf'] = str_replace('public/', '', $path);
+            $validated['file_pdf'] = $request->file('file_pdf')->store('sp2ds', 'public');
         }
 
         $validated['uploaded_by'] = auth()->id();
@@ -145,6 +148,8 @@ class Sp2dController extends Controller
 
     public function edit($id)
     {
+        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
         $sp2d = Sp2d::findOrFail($id);
         
         // Prevent editing if already verified
@@ -163,6 +168,8 @@ class Sp2dController extends Controller
 
     public function update(Request $request, $id)
     {
+        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
         $sp2d = Sp2d::findOrFail($id);
 
         if ($sp2d->status === 'Terverifikasi' && auth()->user()->role !== 'admin') {
@@ -276,6 +283,8 @@ class Sp2dController extends Controller
 
     public function destroy($id)
     {
+        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
         $sp2d = Sp2d::findOrFail($id);
 
         // Hanya admin atau pembuat yang boleh menghapus

@@ -13,6 +13,7 @@ use App\Models\Bast;
 use App\Models\Spm;
 use App\Models\Sp2d;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class ReportController extends Controller
 {
@@ -36,7 +37,7 @@ class ReportController extends Controller
                         ->join('spms', 'sp2ds.spm_id', '=', 'spms.id')
                         ->where('spms.satker_id', $satker->id)
                         ->where('spms.tahun_anggaran', $tahun)
-                        ->where('sp2ds.status', 'verified')
+                            ->where('sp2ds.status', 'Terverifikasi')
                         ->sum('sp2ds.nilai_sp2d');
 
             $labels[] = $satker->nama_satker;
@@ -49,6 +50,11 @@ class ReportController extends Controller
                 'realisasi' => $realisasi,
                 'persentase' => $pagu > 0 ? round(($realisasi / $pagu) * 100, 2) : 0
             ];
+        }
+
+        if ($request->query('export') === 'pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.realisasi-pagu', compact('tableData', 'tahun'));
+            return $pdf->stream('laporan-realisasi-pagu-'.$tahun.'.pdf');
         }
 
         return view('reports.realisasi-pagu', compact('labels', 'dataPagu', 'dataRealisasi', 'tableData', 'tahun'));
@@ -67,7 +73,7 @@ class ReportController extends Controller
         $sp2ds = DB::table('sp2ds')
             ->join('spms', 'sp2ds.spm_id', '=', 'spms.id')
             ->whereYear('sp2ds.tanggal_sp2d', $tahun)
-            ->where('sp2ds.status', 'verified')
+            ->where('sp2ds.status', 'Terverifikasi')
             ->select('sp2ds.tanggal_sp2d', 'spms.tanggal_spm')
             ->get();
             
@@ -94,6 +100,11 @@ class ReportController extends Controller
             ];
         }
 
+        if ($request->query('export') === 'pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.waktu-proses', compact('tableData', 'tahun'));
+            return $pdf->stream('laporan-kinerja-sla-'.$tahun.'.pdf');
+        }
+
         return view('reports.waktu-proses', compact('months', 'dataSla', 'tableData', 'tahun'));
     }
 
@@ -105,7 +116,7 @@ class ReportController extends Controller
         $dataTrend = array_fill(0, 12, 0);
         
         $sp2ds = Sp2d::whereYear('tanggal_sp2d', $tahun)
-                    ->where('status', 'verified')
+                    ->where('status', 'Terverifikasi')
                     ->get();
                     
         foreach ($sp2ds as $sp2d) {
@@ -119,6 +130,11 @@ class ReportController extends Controller
                 'bulan' => $month,
                 'total' => $dataTrend[$i]
             ];
+        }
+
+        if ($request->query('export') === 'pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.tren-pencairan', compact('tableData', 'tahun'));
+            return $pdf->stream('laporan-tren-pencairan-'.$tahun.'.pdf');
         }
 
         return view('reports.tren-pencairan', compact('months', 'dataTrend', 'tableData', 'tahun'));
@@ -153,6 +169,11 @@ class ReportController extends Controller
             ];
         }
 
+        if ($request->query('export') === 'pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.serapan-paket', compact('tableData', 'tahun'));
+            return $pdf->stream('laporan-serapan-paket-'.$tahun.'.pdf');
+        }
+
         return view('reports.serapan-paket', compact('labels', 'dataKontrak', 'dataSerapan', 'tableData', 'tahun'));
     }
 
@@ -171,8 +192,13 @@ class ReportController extends Controller
             ->get();
             
         $labels = $penyedias->pluck('nama_perusahaan')->toArray();
-        $data = $penyedias->pluck('total_kontrak')->toArray();
+        $data = $penyedias->pluck('total_kontrak')->map(fn($v) => (float)$v)->toArray();
         $tableData = $penyedias;
+
+        if ($request->query('export') === 'pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.distribusi-penyedia', compact('tableData', 'tahun'));
+            return $pdf->stream('laporan-distribusi-penyedia-'.$tahun.'.pdf');
+        }
 
         return view('reports.distribusi-penyedia', compact('labels', 'data', 'tableData', 'tahun'));
     }
@@ -189,9 +215,13 @@ class ReportController extends Controller
             ->get();
             
         $labels = $statuses->pluck('status')->toArray();
-        $data = $statuses->pluck('total')->toArray();
-        
+        $data = $statuses->pluck('total')->map(fn($v) => (float)$v)->toArray();
         $tableData = $statuses;
+
+        if ($request->query('export') === 'pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.status-dokumen', compact('tableData', 'tahun'));
+            return $pdf->stream('laporan-status-dokumen-'.$tahun.'.pdf');
+        }
 
         return view('reports.status-dokumen', compact('labels', 'data', 'tableData', 'tahun'));
     }
@@ -224,6 +254,11 @@ class ReportController extends Controller
             $tableData[] = ['satker' => $satker, 'total' => $total];
         }
 
+        if ($request->query('export') === 'pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.tagihan-outstanding', compact('tableData', 'tahun'));
+            return $pdf->stream('laporan-tagihan-outstanding-'.$tahun.'.pdf');
+        }
+
         return view('reports.tagihan-outstanding', compact('labels', 'data', 'tableData', 'tahun'));
     }
 
@@ -246,12 +281,17 @@ class ReportController extends Controller
                 ->sum('basts.nilai_penagihan');
                 
             $labels[] = \Illuminate\Support\Str::limit($ppk->nama, 20);
-            $data[] = $realisasi;
+            $data[] = (float)$realisasi;
             
             $tableData[] = [
                 'ppk' => $ppk->nama,
                 'realisasi' => $realisasi
             ];
+        }
+
+        if ($request->query('export') === 'pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.kinerja-ppk', compact('tableData', 'tahun'));
+            return $pdf->stream('laporan-kinerja-ppk-'.$tahun.'.pdf');
         }
 
         return view('reports.kinerja-ppk', compact('labels', 'data', 'tableData', 'tahun'));
@@ -287,8 +327,8 @@ class ReportController extends Controller
             
             $remainingDays = $totalDays - $passedDays;
             
-            $dataWaktuBerjalan[] = $passedDays;
-            $dataWaktuSisa[] = $remainingDays;
+            $dataWaktuBerjalan[] = (float)$passedDays;
+            $dataWaktuSisa[] = (float)$remainingDays;
             
             $tableData[] = [
                 'paket' => $paket->nama_paket,
@@ -297,6 +337,11 @@ class ReportController extends Controller
                 'sisa_hari' => $remainingDays,
                 'persentase' => round(($passedDays / $totalDays) * 100, 1)
             ];
+        }
+
+        if ($request->query('export') === 'pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.sisa-waktu', compact('tableData', 'tahun'));
+            return $pdf->stream('laporan-sisa-waktu-'.$tahun.'.pdf');
         }
 
         return view('reports.sisa-waktu-kontrak', compact('labels', 'dataWaktuBerjalan', 'dataWaktuSisa', 'tableData', 'tahun'));
@@ -315,9 +360,14 @@ class ReportController extends Controller
             ->get();
             
         $labels = $jenis->pluck('jenis_spm')->toArray();
-        $data = $jenis->pluck('total')->toArray();
+        $data = $jenis->pluck('total')->map(fn($v) => (float)$v)->toArray();
         
         $tableData = $jenis;
+
+        if ($request->query('export') === 'pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf.komposisi-spm', compact('tableData', 'tahun'));
+            return $pdf->stream('laporan-komposisi-spm-'.$tahun.'.pdf');
+        }
 
         return view('reports.komposisi-jenis-spm', compact('labels', 'data', 'tableData', 'tahun'));
     }

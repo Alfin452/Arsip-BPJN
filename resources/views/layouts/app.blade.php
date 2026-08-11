@@ -126,7 +126,7 @@
             <!-- Main Content Wrapper -->
             <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
                 <!-- Top Header -->
-                <header class="sticky top-0 z-50 flex items-center justify-between px-6 lg:px-8 h-24 pt-4 pb-2 bg-[#F4F7FE]/90 dark:bg-slate-900/90 backdrop-blur-md">
+                <header class="sticky top-0 z-50 flex items-center justify-between px-6 lg:px-8 h-24 pt-4 pb-2 bg-[#F4F7FE]/90 dark:bg-slate-900/90 backdrop-blur-md print:hidden">
                     <div class="flex items-center gap-4">
                         <!-- Menu Toggle -->
                         <button @click="sidebarOpen = !sidebarOpen" class="text-slate-500 hover:text-blue-600 focus:outline-none bg-white dark:bg-slate-800 p-2 rounded-full shadow-sm transition-colors">

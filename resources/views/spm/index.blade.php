@@ -201,10 +201,12 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                         <span>Export CSV</span>
                     </button>
-                    <a href="{{ route('spm.create') }}" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-full transition-all duration-200 active:scale-95 shadow-sm flex items-center justify-center gap-2 group">
+                    @if(auth()->user()->role != 'atasan')
+<a href="{{ route('spm.create') }}" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-full transition-all duration-200 active:scale-95 shadow-sm flex items-center justify-center gap-2 group">
                         <svg class="w-4 h-4 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                         <span>Unggah SPM</span>
                     </a>
+@endif
                 </div>
             </div>
 

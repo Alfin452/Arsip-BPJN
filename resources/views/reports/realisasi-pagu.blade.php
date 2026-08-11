@@ -1,4 +1,4 @@
-﻿@extends('reports.layout')
+@extends('reports.layout')
 @section('title', 'Laporan Realisasi Pagu Anggaran per Satker')
 @section('description', 'Membandingkan total pagu anggaran (DIPA) dengan realisasi pencairan (SP2D) untuk tiap Satker pada tahun anggaran terpilih.')
 
@@ -61,40 +61,58 @@
             }],
             chart: {
                 type: 'bar',
-                height: 350,
+                height: 450,
                 toolbar: { show: false },
                 fontFamily: 'Inter, sans-serif'
             },
             plotOptions: {
                 bar: {
-                    horizontal: false,
-                    columnWidth: '55%',
-                    endingShape: 'rounded',
-                    borderRadius: 4
-                },
+                    horizontal: true,
+                    columnWidth: '60%',
+                    borderRadius: 4,
+                    dataLabels: {
+                        position: 'top',
+                    },
+                }
+            },
+            stroke: {
+                show: true,
+                width: 1,
+                colors: ['#fff']
+            },
+            fill: {
+                opacity: 1
             },
             dataLabels: { enabled: false },
-            stroke: { show: true, width: 2, colors: ['transparent'] },
             xaxis: {
                 categories: {!! json_encode($labels) !!},
-            },
-            yaxis: {
-                title: { text: 'Rupiah (Rp)' },
                 labels: {
                     formatter: function (val) {
-                        return (val / 1000000).toFixed(0) + " Juta";
+                        if(val >= 1000000000) {
+                            return "Rp " + (val / 1000000000).toFixed(1) + " M";
+                        }
+                        return "Rp " + (val / 1000000).toFixed(0) + " Jt";
                     }
                 }
             },
-            fill: { opacity: 1 },
+            yaxis: {
+                labels: {
+                    style: {
+                        fontSize: '11px',
+                        fontWeight: 500,
+                    }
+                }
+            },
             tooltip: {
+                shared: true,
+                intersect: false,
                 y: {
                     formatter: function (val) {
                         return "Rp " + new Intl.NumberFormat('id-ID').format(val)
                     }
                 }
             },
-            colors: ['#3b82f6', '#10b981']
+            colors: ['#3b82f6', '#10b981'] // Blue for Pagu, Emerald for Realisasi
         };
 
         var chart = new ApexCharts(document.querySelector("#chartRealisasi"), options);

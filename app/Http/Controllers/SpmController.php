@@ -122,6 +122,8 @@ class SpmController extends Controller
 
     public function create()
     {
+        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
         $satkers = Satker::all();
         $ppks = Ppk::all();
         return view('spm.create', compact('satkers', 'ppks'));
@@ -129,6 +131,8 @@ class SpmController extends Controller
 
     public function store(Request $request)
     {
+        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
         $validated = $request->validate([
             'nomor_spm' => 'required|unique:spms',
             'tanggal_spm' => 'required|date',
@@ -260,6 +264,8 @@ class SpmController extends Controller
 
     public function edit($id)
     {
+        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
         $spm = Spm::findOrFail($id);
         
         // Hanya bisa edit jika masih draft, ditolak, atau menunggu verifikasi
@@ -274,6 +280,8 @@ class SpmController extends Controller
 
     public function update(Request $request, $id)
     {
+        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
         $spm = Spm::findOrFail($id);
         
         if (!in_array($spm->status, ['Draft', 'Menunggu Verifikasi', 'Ditolak'])) {
@@ -349,6 +357,8 @@ class SpmController extends Controller
 
     public function destroy($id)
     {
+        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
         $spm = Spm::findOrFail($id);
 
         if (!in_array($spm->status, ['Draft', 'Menunggu Verifikasi'])) {

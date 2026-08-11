@@ -34,6 +34,8 @@ class PaketPekerjaanController extends Controller
 
     public function store(Request $request)
     {
+        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
         if (auth()->user()->role !== 'admin') {
             abort(403, 'Hanya Admin yang dapat menambah Paket Pekerjaan.');
         }
@@ -57,6 +59,8 @@ class PaketPekerjaanController extends Controller
 
     public function update(Request $request, $id)
     {
+        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
         if (auth()->user()->role !== 'admin') {
             abort(403, 'Hanya Admin yang dapat mengubah Paket Pekerjaan.');
         }
@@ -82,6 +86,8 @@ class PaketPekerjaanController extends Controller
 
     public function destroy($id)
     {
+        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
         if (auth()->user()->role !== 'admin') {
             abort(403, 'Hanya Admin yang dapat menghapus Paket Pekerjaan.');
         }
