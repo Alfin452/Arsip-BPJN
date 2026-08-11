@@ -26,10 +26,6 @@
         </a>
         
         <!-- MODUL TRANSAKSI -->
-        <a href="{{ route('dipas.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition font-medium {{ request()->routeIs('dipas.*') ? 'bg-blue-800 text-white' : 'text-blue-100/70 hover:bg-blue-800/50 hover:text-white' }} mt-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            Pagu Anggaran
-        </a>
         
         <a href="{{ route('paket-pekerjaans.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition font-medium {{ request()->routeIs('paket-pekerjaans.*') ? 'bg-blue-800 text-white' : 'text-blue-100/70 hover:bg-blue-800/50 hover:text-white' }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
@@ -112,8 +108,8 @@
         </a>
 
         <!-- Dropdown Master Data -->
-        <div x-data="{ open: {{ request()->routeIs('satker.*') || request()->routeIs('ppk.*') || request()->routeIs('penyedias.*') ? 'true' : 'false' }} }" class="space-y-1 mt-6">
-            <button @click="open = !open" class="w-full flex items-center justify-between gap-2.5 px-3 py-2.5 rounded-lg text-sm transition font-medium {{ request()->routeIs('satker.*') || request()->routeIs('ppk.*') || request()->routeIs('penyedias.*') ? 'bg-blue-800 text-white' : 'text-blue-100/70 hover:bg-blue-800/50 hover:text-white' }}">
+        <div x-data="{ open: {{ request()->routeIs('satker.*') || request()->routeIs('ppk.*') || request()->routeIs('penyedias.*') || request()->routeIs('dipas.*') ? 'true' : 'false' }} }" class="space-y-1 mt-6">
+            <button @click="open = !open" class="w-full flex items-center justify-between gap-2.5 px-3 py-2.5 rounded-lg text-sm transition font-medium {{ request()->routeIs('satker.*') || request()->routeIs('ppk.*') || request()->routeIs('penyedias.*') || request()->routeIs('dipas.*') ? 'bg-blue-800 text-white' : 'text-blue-100/70 hover:bg-blue-800/50 hover:text-white' }}">
                 <div class="flex items-center gap-2.5">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                     Master Data
@@ -121,6 +117,11 @@
                 <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
             </button>
             <div x-show="open" style="display: none;" class="pl-11 space-y-1 mt-1 pb-2">
+                <a href="{{ route('dipas.index') }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition font-medium {{ request()->routeIs('dipas.*') ? 'text-white font-semibold' : 'text-blue-200/70 hover:text-white' }}">
+                    <div class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('dipas.*') ? 'bg-blue-400' : 'bg-blue-200/50' }}"></div>
+                    Pagu Anggaran (DIPA)
+                </a>
+                
                 <a href="{{ route('satker.index') }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition font-medium {{ request()->routeIs('satker.*') ? 'text-white font-semibold' : 'text-blue-200/70 hover:text-white' }}">
                     <div class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('satker.*') ? 'bg-blue-400' : 'bg-blue-200/50' }}"></div>
                     Data Satker
