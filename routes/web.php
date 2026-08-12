@@ -12,8 +12,25 @@ Route::get('/dashboard', function () {
     $total_sp2d = \App\Models\Sp2d::count();
     $nilai_spm = \App\Models\Spm::sum('nilai_spm');
     $nilai_sp2d = \App\Models\Sp2d::sum('nilai_sp2d');
+    
+    // Data tambahan untuk peran lain
+    $total_basts = \App\Models\Bast::count();
+    $total_users = \App\Models\User::count();
+    $total_satker = \App\Models\Satker::count();
+    $total_logs = \Spatie\Activitylog\Models\Activity::count();
+    
+    // Data khusus Admin
+    $recent_logs = \Spatie\Activitylog\Models\Activity::with('causer')->latest()->take(5)->get();
+    $sys_info = [
+        'php_version' => phpversion(),
+        'laravel_version' => app()->version(),
+    ];
 
-    return view('dashboard', compact('total_spm', 'total_sp2d', 'nilai_spm', 'nilai_sp2d'));
+    return view('dashboard', compact(
+        'total_spm', 'total_sp2d', 'nilai_spm', 'nilai_sp2d',
+        'total_basts', 'total_users', 'total_satker', 'total_logs',
+        'recent_logs', 'sys_info'
+    ));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
