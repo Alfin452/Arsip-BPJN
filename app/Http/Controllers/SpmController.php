@@ -185,7 +185,7 @@ class SpmController extends Controller
         ]);
 
         if ($statusAwal === 'Menunggu Verifikasi') {
-            $atasanUsers = User::where('role', 'admin')->get();
+            $atasanUsers = User::whereIn('role', ['admin', 'atasan'])->get();
             Notification::send($atasanUsers, new SpmSubmitted($spm));
         }
 
@@ -224,7 +224,7 @@ class SpmController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        if (auth()->user()->role !== 'admin') {
+        if (!in_array(auth()->user()->role, ['admin', 'atasan'])) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
@@ -250,7 +250,7 @@ class SpmController extends Controller
             $spm->uploader->notify(new SpmStatusUpdated($spm));
         }
 
-        // Hapus notifikasi "Menunggu Verifikasi" untuk SPM ini dari semua admin
+        // Hapus notifikasi "Menunggu Verifikasi" untuk SPM ini dari semua admin dan atasan
         \Illuminate\Support\Facades\DB::table('notifications')
             ->where('type', 'App\Notifications\SpmSubmitted')
             ->whereJsonContains('data->spm_id', $spm->id)
@@ -348,7 +348,7 @@ class SpmController extends Controller
         ]);
 
         if (in_array($statusSebelumnya, ['Draft', 'Ditolak']) && $statusBaru === 'Menunggu Verifikasi') {
-            $atasanUsers = User::where('role', 'admin')->get();
+            $atasanUsers = User::whereIn('role', ['admin', 'atasan'])->get();
             Notification::send($atasanUsers, new SpmSubmitted($spm));
         }
 

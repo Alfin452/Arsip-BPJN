@@ -7,7 +7,7 @@
         </div>
         
         <div class="flex items-center gap-3 pr-12"> <!-- pr-12 to make room for absolute close button -->
-            @if(auth()->user()->role === 'admin' && $bast->status == 'Menunggu Verifikasi')
+            @if(in_array(auth()->user()->role, ['admin', 'atasan']) && $bast->status == 'Menunggu Verifikasi')
             <form action="{{ route('basts.updateStatus', $bast->id) }}" method="POST" class="inline-flex gap-2">
                 @csrf
                 <input type="hidden" name="status" value="Terverifikasi">

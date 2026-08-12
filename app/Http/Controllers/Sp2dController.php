@@ -39,8 +39,8 @@ class Sp2dController extends Controller
             $query->whereDate('tanggal_sp2d', '<=', $request->end_date);
         }
 
-        // Admin-only filters (Satker & PPK based on parent SPM)
-        if (auth()->user()->role === 'admin') {
+        // Admin and Atasan filters (Satker & PPK based on parent SPM)
+        if (in_array(auth()->user()->role, ['admin', 'atasan'])) {
             if ($request->filled('satker_id')) {
                 $query->whereHas('spm', function ($q) use ($request) {
                     $q->where('satker_id', $request->satker_id);
@@ -116,8 +116,8 @@ class Sp2dController extends Controller
 
         $sp2d = Sp2d::create($validated);
 
-        // Notifikasi ke semua Admin
-        $admins = \App\Models\User::where('role', 'admin')->get();
+        // Notifikasi ke semua Admin dan Atasan
+        $admins = \App\Models\User::whereIn('role', ['admin', 'atasan'])->get();
         \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\Sp2dSubmitted($sp2d));
 
         return redirect()->route('sp2d.index')->with('success', 'Dokumen SP2D berhasil diunggah dan menunggu verifikasi Admin.');
@@ -153,7 +153,7 @@ class Sp2dController extends Controller
         $sp2d = Sp2d::findOrFail($id);
         
         // Prevent editing if already verified
-        if ($sp2d->status === 'Terverifikasi' && auth()->user()->role !== 'admin') {
+        if ($sp2d->status === 'Terverifikasi' && !in_array(auth()->user()->role, ['admin', 'atasan'])) {
             return redirect()->route('sp2d.index')->with('error', 'SP2D yang sudah diverifikasi tidak dapat diedit.');
         }
 
@@ -172,7 +172,7 @@ class Sp2dController extends Controller
 
         $sp2d = Sp2d::findOrFail($id);
 
-        if ($sp2d->status === 'Terverifikasi' && auth()->user()->role !== 'admin') {
+        if ($sp2d->status === 'Terverifikasi' && !in_array(auth()->user()->role, ['admin', 'atasan'])) {
             return redirect()->route('sp2d.index')->with('error', 'SP2D yang sudah diverifikasi tidak dapat diedit.');
         }
 
@@ -287,8 +287,8 @@ class Sp2dController extends Controller
 
         $sp2d = Sp2d::findOrFail($id);
 
-        // Hanya admin atau pembuat yang boleh menghapus
-        if (auth()->user()->role !== 'admin' && $sp2d->uploaded_by !== auth()->id()) {
+        // Hanya admin/atasan atau pembuat yang boleh menghapus
+        if (!in_array(auth()->user()->role, ['admin', 'atasan']) && $sp2d->uploaded_by !== auth()->id()) {
             abort(403, 'Unauthorized action.');
         }
 

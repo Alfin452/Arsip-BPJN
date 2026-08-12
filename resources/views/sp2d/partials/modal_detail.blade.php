@@ -43,9 +43,9 @@
                     @endif
                 </div>
 
-                @if($sp2d->status == 'Menunggu Verifikasi' && auth()->user()->role == 'admin')
+                @if($sp2d->status == 'Menunggu Verifikasi' && in_array(auth()->user()->role, ['admin', 'atasan']))
                     <div class="pt-4 mt-2 border-t border-slate-200 dark:border-slate-700/50 space-y-2">
-                        <p class="text-xs font-semibold text-slate-500 mb-2">Tindakan Admin:</p>
+                        <p class="text-xs font-semibold text-slate-500 mb-2">Tindakan Admin & Atasan:</p>
                         <button onclick="updateSp2dStatus({{ $sp2d->id }}, 'Terverifikasi')" class="w-full py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-all active:scale-95 flex items-center justify-center gap-2 shadow-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                             Verifikasi SP2D

@@ -126,8 +126,8 @@
                         </div>
                     </div>
 
-                    <!-- Filter Satker (Hanya untuk Admin) -->
-                    @if(auth()->user()->role == 'admin')
+                    <!-- Filter Satker (Hanya untuk Admin & Atasan) -->
+                    @if(in_array(auth()->user()->role, ['admin', 'atasan']))
                     <div class="relative w-full md:w-40" :class="open ? 'z-50' : 'z-40'" x-data="{
                         open: false,
                         options: [

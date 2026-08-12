@@ -3,7 +3,7 @@
         Detail Dokumen SPM - <span class="text-blue-600">{{ $spm->nomor_spm }}</span>
     </h3>
     <div class="flex items-center space-x-3">
-        @if(auth()->user()->role == 'admin' && in_array($spm->status, ['Draft', 'Menunggu Verifikasi']))
+        @if(in_array(auth()->user()->role, ['admin', 'atasan']) && in_array($spm->status, ['Draft', 'Menunggu Verifikasi']))
             <button type="button" onclick="updateSpmStatus({{ $spm->id }}, 'Terverifikasi')" class="inline-flex items-center justify-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm transition-all shadow-md shadow-emerald-500/30">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 Verifikasi Dokumen
