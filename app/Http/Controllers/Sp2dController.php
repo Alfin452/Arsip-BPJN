@@ -74,7 +74,7 @@ class Sp2dController extends Controller
 
     public function create(Request $request)
     {
-        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
 
         // Hanya SPM yang Terverifikasi dan BELUM memiliki SP2D
         $spms = Spm::with(['satker', 'ppk'])
@@ -89,7 +89,7 @@ class Sp2dController extends Controller
 
     public function store(Request $request)
     {
-        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
 
         $validated = $request->validate([
             'spm_id' => 'required|exists:spms,id',
@@ -148,7 +148,7 @@ class Sp2dController extends Controller
 
     public function edit($id)
     {
-        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
 
         $sp2d = Sp2d::findOrFail($id);
         
@@ -168,7 +168,7 @@ class Sp2dController extends Controller
 
     public function update(Request $request, $id)
     {
-        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
 
         $sp2d = Sp2d::findOrFail($id);
 
@@ -283,7 +283,7 @@ class Sp2dController extends Controller
 
     public function destroy($id)
     {
-        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
 
         $sp2d = Sp2d::findOrFail($id);
 

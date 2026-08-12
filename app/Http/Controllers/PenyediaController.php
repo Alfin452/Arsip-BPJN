@@ -24,8 +24,8 @@ class PenyediaController extends Controller
 
     public function store(Request $request)
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Hanya Admin yang dapat menambah Penyedia Jasa.');
+        if (!in_array(auth()->user()->role, ['admin', 'atasan'])) {
+            abort(403, 'Hanya Admin dan Atasan yang dapat menambah Penyedia Jasa.');
         }
 
         $validated = $request->validate([
@@ -43,8 +43,8 @@ class PenyediaController extends Controller
 
     public function update(Request $request, $id)
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Hanya Admin yang dapat mengubah Penyedia Jasa.');
+        if (!in_array(auth()->user()->role, ['admin', 'atasan'])) {
+            abort(403, 'Hanya Admin dan Atasan yang dapat mengubah Penyedia Jasa.');
         }
 
         $penyedia = Penyedia::findOrFail($id);
@@ -64,8 +64,8 @@ class PenyediaController extends Controller
 
     public function destroy($id)
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Hanya Admin yang dapat menghapus Penyedia Jasa.');
+        if (!in_array(auth()->user()->role, ['admin', 'atasan'])) {
+            abort(403, 'Hanya Admin dan Atasan yang dapat menghapus Penyedia Jasa.');
         }
 
         $penyedia = Penyedia::findOrFail($id);

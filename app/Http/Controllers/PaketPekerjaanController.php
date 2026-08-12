@@ -20,7 +20,7 @@ class PaketPekerjaanController extends Controller
                   ->orWhere('nomor_kontrak', 'like', "%{$search}%");
         }
 
-        if (auth()->user()->role !== 'admin' && auth()->user()->satker_id) {
+        if (!in_array(auth()->user()->role, ['admin', 'atasan']) && auth()->user()->satker_id) {
             $query->where('satker_id', auth()->user()->satker_id);
         }
 
@@ -34,10 +34,10 @@ class PaketPekerjaanController extends Controller
 
     public function store(Request $request)
     {
-        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
 
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Hanya Admin yang dapat menambah Paket Pekerjaan.');
+
+        if (!in_array(auth()->user()->role, ['admin', 'atasan'])) {
+            abort(403, 'Hanya Admin dan Atasan yang dapat menambah Paket Pekerjaan.');
         }
 
         $validated = $request->validate([
@@ -59,10 +59,10 @@ class PaketPekerjaanController extends Controller
 
     public function update(Request $request, $id)
     {
-        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
 
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Hanya Admin yang dapat mengubah Paket Pekerjaan.');
+
+        if (!in_array(auth()->user()->role, ['admin', 'atasan'])) {
+            abort(403, 'Hanya Admin dan Atasan yang dapat mengubah Paket Pekerjaan.');
         }
 
         $paket = PaketPekerjaan::findOrFail($id);
@@ -86,10 +86,10 @@ class PaketPekerjaanController extends Controller
 
     public function destroy($id)
     {
-        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
 
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Hanya Admin yang dapat menghapus Paket Pekerjaan.');
+
+        if (!in_array(auth()->user()->role, ['admin', 'atasan'])) {
+            abort(403, 'Hanya Admin dan Atasan yang dapat menghapus Paket Pekerjaan.');
         }
 
         $paket = PaketPekerjaan::findOrFail($id);

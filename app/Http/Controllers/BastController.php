@@ -59,7 +59,7 @@ class BastController extends Controller
 
     public function store(Request $request)
     {
-        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
 
         $request->validate([
             'paket_pekerjaan_id' => 'required|exists:paket_pekerjaans,id',
@@ -90,7 +90,7 @@ class BastController extends Controller
 
     public function update(Request $request, Bast $bast)
     {
-        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
 
         $request->validate([
             'paket_pekerjaan_id' => 'required|exists:paket_pekerjaans,id',
@@ -122,7 +122,7 @@ class BastController extends Controller
 
     public function destroy(Bast $bast)
     {
-        if (auth()->user()->role === 'atasan') abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
+
 
         if ($bast->file_dokumen) {
             Storage::disk('public')->delete($bast->file_dokumen);

@@ -26,7 +26,7 @@ class DipaController extends Controller
         }
 
         // Filter untuk user biasa (hanya Satker yang di-assign)
-        if (auth()->user()->role !== 'admin' && auth()->user()->satker_id) {
+        if (!in_array(auth()->user()->role, ['admin', 'atasan']) && auth()->user()->satker_id) {
             $query->where('satker_id', auth()->user()->satker_id);
         }
 
@@ -41,8 +41,8 @@ class DipaController extends Controller
 
     public function store(Request $request)
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Hanya Admin yang dapat menambah DIPA.');
+        if (!in_array(auth()->user()->role, ['admin', 'atasan'])) {
+            abort(403, 'Hanya Admin dan Atasan yang dapat menambah DIPA.');
         }
 
         $validated = $request->validate([
@@ -69,8 +69,8 @@ class DipaController extends Controller
 
     public function update(Request $request, $id)
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Hanya Admin yang dapat mengubah DIPA.');
+        if (!in_array(auth()->user()->role, ['admin', 'atasan'])) {
+            abort(403, 'Hanya Admin dan Atasan yang dapat mengubah DIPA.');
         }
 
         $dipa = Dipa::findOrFail($id);
@@ -88,8 +88,8 @@ class DipaController extends Controller
 
     public function destroy($id)
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Hanya Admin yang dapat menghapus DIPA.');
+        if (!in_array(auth()->user()->role, ['admin', 'atasan'])) {
+            abort(403, 'Hanya Admin dan Atasan yang dapat menghapus DIPA.');
         }
 
         $dipa = Dipa::findOrFail($id);
