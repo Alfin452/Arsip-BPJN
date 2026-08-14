@@ -1,6 +1,6 @@
-﻿@extends('reports.layout')
-@section('title', 'Laporan Kinerja Waktu Pemrosesan Dokumen (SLA)')
-@section('description', 'Menganalisis rata-rata waktu (dalam hari) yang dibutuhkan dari tanggal SPM hingga terbit SP2D per bulan.')
+@extends('reports.layout')
+@section('title', 'Laporan Waktu Proses SPM dan SP2D')
+@section('description', 'Menganalisis waktu (dalam hari) yang dibutuhkan dari tanggal SPM hingga terbit SP2D per bulan.')
 
 @section('filters')
     <div class="w-48">
@@ -23,7 +23,7 @@
             <tr class="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 text-sm">
                 <th class="px-6 py-4 font-semibold border-b border-slate-200 dark:border-slate-700">Bulan</th>
                 <th class="px-6 py-4 font-semibold border-b border-slate-200 dark:border-slate-700 text-center">Jumlah Dokumen SP2D</th>
-                <th class="px-6 py-4 font-semibold border-b border-slate-200 dark:border-slate-700 text-center">Rata-rata Waktu Proses (Hari)</th>
+                <th class="px-6 py-4 font-semibold border-b border-slate-200 dark:border-slate-700 text-center">Waktu Proses SPM & SP2D (Hari)</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
@@ -43,7 +43,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         var options = {
             series: [{
-                name: 'Rata-rata Waktu Proses (Hari)',
+                name: 'Waktu Proses SPM & SP2D (Hari)',
                 data: {!! json_encode($dataSla) !!}
             }],
             chart: {

@@ -3,21 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Models\Satker;
-use App\Models\Ppk;
-use App\Models\Penyedia;
-use App\Models\PaketPekerjaan;
-use App\Models\Dipa;
-use App\Models\Bast;
 use App\Models\Spm;
 use App\Models\Sp2d;
-use Carbon\Carbon;
+use App\Models\Bast;
+use App\Models\PaketPekerjaan;
+use App\Models\Penyedia;
+use App\Models\Ppk;
+use App\Models\Satker;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class ReportController extends Controller
 {
-    // 1. Laporan Realisasi Pagu Anggaran
+    // 1. Realisasi Pagu Per Satker
     public function realisasiPagu(Request $request)
     {
         $tahun = $request->input('tahun', date('Y'));
@@ -29,25 +28,28 @@ class ReportController extends Controller
         $tableData = [];
 
         foreach ($satkers as $satker) {
-            $pagu = Dipa::where('satker_id', $satker->id)
-                        ->where('tahun_anggaran', $tahun)
-                        ->sum('nilai_pagu');
-                        
-            $realisasi = DB::table('sp2ds')
-                        ->join('spms', 'sp2ds.spm_id', '=', 'spms.id')
-                        ->where('spms.satker_id', $satker->id)
-                        ->where('spms.tahun_anggaran', $tahun)
-                            ->where('sp2ds.status', 'Terverifikasi')
-                        ->sum('sp2ds.nilai_sp2d');
-
-            $labels[] = $satker->nama_satker;
-            $dataPagu[] = $pagu;
-            $dataRealisasi[] = $realisasi;
+            $labels[] = Str::limit($satker->nama_satker, 20);
             
+            $pagu = DB::table('dipas')
+                ->where('satker_id', $satker->id)
+                ->where('tahun_anggaran', $tahun)
+                ->sum('nilai_pagu');
+                
+            $realisasi = DB::table('sp2ds')
+                ->join('spms', 'sp2ds.spm_id', '=', 'spms.id')
+                ->where('spms.satker_id', $satker->id)
+                ->whereYear('sp2ds.tanggal_sp2d', $tahun)
+                ->where('sp2ds.status', 'Terverifikasi')
+                ->sum('sp2ds.nilai_sp2d');
+
+            $dataPagu[] = (float)$pagu;
+            $dataRealisasi[] = (float)$realisasi;
+
             $tableData[] = [
                 'satker' => $satker->nama_satker,
                 'pagu' => $pagu,
                 'realisasi' => $realisasi,
+                'sisa' => $pagu - $realisasi,
                 'persentase' => $pagu > 0 ? round(($realisasi / $pagu) * 100, 2) : 0
             ];
         }
@@ -60,12 +62,11 @@ class ReportController extends Controller
         return view('reports.realisasi-pagu', compact('labels', 'dataPagu', 'dataRealisasi', 'tableData', 'tahun'));
     }
 
-    // 2. Laporan Kinerja Waktu Pemrosesan Dokumen (SLA)
+    // 2. Laporan Kinerja Waktu Pemrosesan Dokumen
     public function waktuProses(Request $request)
     {
         $tahun = $request->input('tahun', date('Y'));
         
-        // SLA SPM ke SP2D per bulan
         $months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
         $dataSla = array_fill(0, 12, 0);
         $countSla = array_fill(0, 12, 0);
@@ -231,7 +232,6 @@ class ReportController extends Controller
     {
         $tahun = $request->input('tahun', date('Y'));
         
-        // BAST yang masih Menunggu Verifikasi
         $basts = Bast::with(['paketPekerjaan.satker'])
             ->whereYear('tanggal_bast', $tahun)
             ->where('status', 'Menunggu Verifikasi')
@@ -280,7 +280,7 @@ class ReportController extends Controller
                 ->where('basts.status', 'Terverifikasi')
                 ->sum('basts.nilai_penagihan');
                 
-            $labels[] = \Illuminate\Support\Str::limit($ppk->nama, 20);
+            $labels[] = Str::limit($ppk->nama, 20);
             $data[] = (float)$realisasi;
             
             $tableData[] = [
@@ -297,44 +297,70 @@ class ReportController extends Controller
         return view('reports.kinerja-ppk', compact('labels', 'data', 'tableData', 'tahun'));
     }
 
+    private function formatDurationHuman($days)
+    {
+        $days = (int) round($days);
+        if ($days <= 0) return '0 Hari';
+        
+        $years = (int) floor($days / 365);
+        $rem = $days % 365;
+        $months = (int) floor($rem / 30);
+        $remDays = $rem % 30;
+
+        $parts = [];
+        if ($years > 0) $parts[] = $years . ' Thn';
+        if ($months > 0) $parts[] = $months . ' Bln';
+        if ($remDays > 0 || empty($parts)) $parts[] = $remDays . ' Hari';
+
+        return implode(' ', $parts);
+    }
+
     // 9. Sisa Waktu Kontrak
     public function sisaWaktuKontrak(Request $request)
     {
         $tahun = $request->input('tahun', date('Y'));
         
-        $pakets = PaketPekerjaan::whereYear('tanggal_kontrak', $tahun)->get();
+        $pakets = PaketPekerjaan::with(['satker', 'ppk'])
+                    ->whereYear('tanggal_kontrak', $tahun)
+                    ->get();
+
         $labels = [];
         $dataWaktuBerjalan = [];
         $dataWaktuSisa = [];
         $tableData = [];
 
         foreach ($pakets as $paket) {
-            $labels[] = \Illuminate\Support\Str::limit($paket->nama_paket, 20);
+            $labels[] = Str::limit($paket->nama_paket, 20);
             
             $start = Carbon::parse($paket->tanggal_mulai);
             $end = Carbon::parse($paket->tanggal_selesai);
             $now = Carbon::now();
             
-            $totalDays = $start->diffInDays($end) ?: 1;
+            $totalDays = (int) round($start->diffInDays($end)) ?: 1;
             
             if ($now < $start) {
                 $passedDays = 0;
             } elseif ($now > $end) {
                 $passedDays = $totalDays;
             } else {
-                $passedDays = $start->diffInDays($now);
+                $passedDays = (int) round($start->diffInDays($now));
             }
             
-            $remainingDays = $totalDays - $passedDays;
+            $remainingDays = max(0, $totalDays - $passedDays);
             
-            $dataWaktuBerjalan[] = (float)$passedDays;
-            $dataWaktuSisa[] = (float)$remainingDays;
+            $dataWaktuBerjalan[] = $passedDays;
+            $dataWaktuSisa[] = $remainingDays;
             
             $tableData[] = [
                 'paket' => $paket->nama_paket,
+                'satker' => $paket->satker ? $paket->satker->nama_satker : '-',
+                'ppk' => $paket->ppk ? $paket->ppk->nama : '-',
                 'total_hari' => $totalDays,
+                'total_hari_fmt' => $this->formatDurationHuman($totalDays),
                 'hari_berjalan' => $passedDays,
+                'hari_berjalan_fmt' => $this->formatDurationHuman($passedDays),
                 'sisa_hari' => $remainingDays,
+                'sisa_hari_fmt' => $this->formatDurationHuman($remainingDays),
                 'persentase' => round(($passedDays / $totalDays) * 100, 1)
             ];
         }
@@ -352,14 +378,27 @@ class ReportController extends Controller
     {
         $tahun = $request->input('tahun', date('Y'));
         
+        $mapJenis = [
+            'LS' => 'LS (Pembayaran Langsung)',
+            'UP' => 'UP (Uang Persediaan)',
+            'TUP' => 'TUP (Tambahan Uang Persediaan)',
+            'GUP' => 'GUP (Ganti Uang Persediaan)',
+            'PTUP' => 'PTUP (Pertanggungjawaban TUP)',
+        ];
+
         $jenis = DB::table('spms')
             ->where('tahun_anggaran', $tahun)
             ->whereNotNull('jenis_spm')
             ->select('jenis_spm', DB::raw('COUNT(id) as total'))
             ->groupBy('jenis_spm')
-            ->get();
+            ->get()
+            ->map(function ($item) use ($mapJenis) {
+                $code = strtoupper(trim($item->jenis_spm));
+                $item->nama_jenis = $mapJenis[$code] ?? $item->jenis_spm;
+                return $item;
+            });
             
-        $labels = $jenis->pluck('jenis_spm')->toArray();
+        $labels = $jenis->pluck('nama_jenis')->toArray();
         $data = $jenis->pluck('total')->map(fn($v) => (float)$v)->toArray();
         
         $tableData = $jenis;

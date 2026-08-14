@@ -63,7 +63,7 @@
                 </a>
                 <a href="{{ route('laporan.waktu-proses') }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition font-medium {{ request()->routeIs('laporan.waktu-proses') ? 'text-white font-semibold' : 'text-blue-200/70 hover:text-white' }}">
                     <div class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('laporan.waktu-proses') ? 'bg-blue-400' : 'bg-blue-200/50' }}"></div>
-                    Kinerja SLA Waktu
+                    Waktu Proses SPM & SP2D
                 </a>
                 <a href="{{ route('laporan.tren-pencairan') }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition font-medium {{ request()->routeIs('laporan.tren-pencairan') ? 'text-white font-semibold' : 'text-blue-200/70 hover:text-white' }}">
                     <div class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('laporan.tren-pencairan') ? 'bg-blue-400' : 'bg-blue-200/50' }}"></div>

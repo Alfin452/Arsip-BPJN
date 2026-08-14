@@ -89,13 +89,18 @@
 
     <table class="ttd-box">
         <tr>
-            <td style="width: 65%;"></td>
-            <td style="width: 35%; text-align: left;">
-                <p style="margin: 0 0 5px 0;">Surabaya, {{ now()->translatedFormat('d F Y') }}</p>
-                <p style="margin: 0;">Kepala Sub Bagian Tata Usaha,</p>
-                <br><br><br><br>
-                <p style="margin: 0; font-weight: bold; text-decoration: underline;">(........................................)</p>
-                <p style="margin: 5px 0 0 0;">NIP. ........................................</p>
+            <td style="width: 50%;"></td>
+            <td style="width: 50%; text-align: center;">
+                <p style="margin: 0 0 4px 0;">Surabaya, {{ now()->translatedFormat("d F Y") }}</p>
+                <p style="margin: 0 0 6px 0; font-weight: bold;">Kepala Sub Bagian Tata Usaha,</p>
+                
+                <div style="margin: 6px 0;">
+                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path("images/qr-ttd.png"))) }}" style="width: 85px; height: 85px; border: 1px solid #cbd5e1; padding: 4px; background: #ffffff; border-radius: 4px;">
+                </div>
+
+                <p style="margin: 4px 0 0 0; font-weight: bold; text-decoration: underline;">Ir. H. SUGENG PRAYITNO, M.T.</p>
+                <p style="margin: 2px 0 0 0; font-size: 10px;">NIP. 19750812 200212 1 003</p>
+                <p style="margin: 3px 0 0 0; font-size: 8px; color: #475569; font-style: italic;">Dokumen ini telah ditandatangani secara elektronik (BSrE - BSSN)</p>
             </td>
         </tr>
     </table>

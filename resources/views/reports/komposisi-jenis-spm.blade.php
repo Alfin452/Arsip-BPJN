@@ -30,8 +30,8 @@
         <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
             @forelse($tableData as $row)
             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                <td class="px-6 py-4 text-sm font-medium text-slate-800 dark:text-slate-200">{{ $row->jenis_spm }}</td>
-                <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 text-center">{{ $row->total }}</td>
+                <td class="px-6 py-4 text-sm font-medium text-slate-800 dark:text-slate-200">{{ $row->nama_jenis ?? $row->jenis_spm }}</td>
+                <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 text-center font-semibold">{{ $row->total }} Dokumen</td>
             </tr>
             @empty
             <tr>

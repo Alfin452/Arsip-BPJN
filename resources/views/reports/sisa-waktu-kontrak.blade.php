@@ -1,4 +1,4 @@
-﻿@extends('reports.layout')
+@extends('reports.layout')
 @section('title', 'Laporan Sisa Waktu Pelaksanaan Kontrak')
 @section('description', 'Menampilkan progress berjalannya waktu pelaksanaan proyek fisik dibandingkan dengan total durasi kontrak.')
 
@@ -22,9 +22,10 @@
         <thead>
             <tr class="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 text-sm">
                 <th class="px-6 py-4 font-semibold border-b border-slate-200 dark:border-slate-700">Nama Paket Pekerjaan</th>
-                <th class="px-6 py-4 font-semibold border-b border-slate-200 dark:border-slate-700 text-center">Total Masa (Hari)</th>
+                <th class="px-6 py-4 font-semibold border-b border-slate-200 dark:border-slate-700 text-center">PPK / Satker</th>
+                <th class="px-6 py-4 font-semibold border-b border-slate-200 dark:border-slate-700 text-center">Total Masa</th>
                 <th class="px-6 py-4 font-semibold border-b border-slate-200 dark:border-slate-700 text-center">Hari Berjalan</th>
-                <th class="px-6 py-4 font-semibold border-b border-slate-200 dark:border-slate-700 text-center">Sisa Hari</th>
+                <th class="px-6 py-4 font-semibold border-b border-slate-200 dark:border-slate-700 text-center">Sisa Waktu</th>
                 <th class="px-6 py-4 font-semibold border-b border-slate-200 dark:border-slate-700 text-center">% Berjalan</th>
             </tr>
         </thead>
@@ -32,19 +33,23 @@
             @forelse($tableData as $row)
             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                 <td class="px-6 py-4 text-sm font-medium text-slate-800 dark:text-slate-200">{{ $row['paket'] }}</td>
-                <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 text-center">{{ $row['total_hari'] }}</td>
-                <td class="px-6 py-4 text-sm text-blue-600 dark:text-blue-400 font-medium text-center">{{ $row['hari_berjalan'] }}</td>
-                <td class="px-6 py-4 text-sm text-amber-600 dark:text-amber-400 font-medium text-center">{{ $row['sisa_hari'] }}</td>
+                <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 text-center">
+                    <span class="font-semibold text-slate-700 dark:text-slate-300 block">{{ $row['ppk'] }}</span>
+                    <span class="text-xs text-slate-400 block">{{ $row['satker'] }}</span>
+                </td>
+                <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 text-center font-medium">{{ $row['total_hari_fmt'] }} ({{ $row['total_hari'] }} Hari)</td>
+                <td class="px-6 py-4 text-sm text-blue-600 dark:text-blue-400 font-semibold text-center">{{ $row['hari_berjalan_fmt'] }}</td>
+                <td class="px-6 py-4 text-sm text-amber-600 dark:text-amber-400 font-semibold text-center">{{ $row['sisa_hari_fmt'] }}</td>
                 <td class="px-6 py-4 text-sm text-center">
                     <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 mt-1">
                         <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ min($row['persentase'], 100) }}%"></div>
                     </div>
-                    <span class="text-xs text-slate-500 mt-1 block">{{ $row['persentase'] }}%</span>
+                    <span class="text-xs text-slate-500 mt-1 block font-bold">{{ $row['persentase'] }}%</span>
                 </td>
             </tr>
             @empty
             <tr>
-                <td colspan="5" class="px-6 py-8 text-center text-slate-500">Tidak ada data untuk tahun {{ $tahun }}</td>
+                <td colspan="6" class="px-6 py-8 text-center text-slate-500">Tidak ada data untuk tahun {{ $tahun }}</td>
             </tr>
             @endforelse
         </tbody>
@@ -83,7 +88,7 @@
                 categories: {!! json_encode($labels) !!},
                 labels: {
                     formatter: function (val) {
-                        return val + " Hari"
+                        return Math.round(val) + " Hari"
                     }
                 }
             },
@@ -93,7 +98,7 @@
             tooltip: {
                 y: {
                     formatter: function (val) {
-                        return val + " Hari"
+                        return Math.round(val) + " Hari"
                     }
                 }
             },
