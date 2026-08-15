@@ -79,8 +79,8 @@
                     <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path("images/qr-ttd.png"))) }}" style="width: 85px; height: 85px; border: 1px solid #cbd5e1; padding: 4px; background: #ffffff; border-radius: 4px;">
                 </div>
 
-                <p style="margin: 4px 0 0 0; font-weight: bold; text-decoration: underline;">Ir. H. SUGENG PRAYITNO, M.T.</p>
-                <p style="margin: 2px 0 0 0; font-size: 10px;">NIP. 19750812 200212 1 003</p>
+                <p style="margin: 4px 0 0 0; font-weight: bold; text-decoration: underline;">SUTRISNO, ST, MT</p>
+                <p style="margin: 2px 0 0 0; font-size: 10px;">NIP 196809262002121006</p>
                 <p style="margin: 3px 0 0 0; font-size: 8px; color: #475569; font-style: italic;">Dokumen ini telah ditandatangani secara elektronik (BSrE - BSSN)</p>
             </td>
         </tr>
